@@ -16,7 +16,7 @@ jobs:
       - name: Install Flet
         run: pip install flet
       - name: Build APK
-        run: flet build apk --project "Bubbles Car Wash" --org com.bubbles.carwash --icon icon.png --splash-color "#00796B"
+        run: flet build apk --project "Bubbles Car Wash" --org com.bubbles.carwash--splash-color "#00796B"
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
