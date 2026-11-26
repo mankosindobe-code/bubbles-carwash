@@ -1,4 +1,4 @@
-name: Build Bubbles APK
+name: Build APK
 
 on:
   push:
@@ -9,24 +9,34 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - uses: actions/setup-java@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          distribution: 'temurin'
-          java-version: '17'
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.47.9'
-          channel: 'stable'
+          channel: stable
+
       - name: Install Flet
         run: pip install flet
+
       - name: Build APK
         run: flet build apk --verbose
+
+      - name: Find APK - THE BACKUP PLAN
+        run: |
+          echo "=== LOOKING FOR APK ==="
+          find build -name "*.apk"
+          echo "=== ALL FILES IN BUILD ==="
+          ls -R build
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: bubbles-apk
-          path: build/**/*.apk 
+          name: app-apk
+          path: build/**/*.apk
