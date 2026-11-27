@@ -26,29 +26,22 @@ jobs:
           pip install --upgrade flet
 
       - name: Build Android APK
-        run: flet build apk --verbose
+        run: flet build apk --yes --verbose
 
       - name: Find and prepare APK
         run: |
-          echo "Searching for APK..."
-
-          find build -type f -name "*.apk"
-
           APK=$(find build -type f -name "*.apk" -print -quit)
 
           if [ -z "$APK" ]; then
-            echo "ERROR: APK was not generated!"
-            echo "Build directory contents:"
-            ls -R build
+            echo "ERROR: APK not found!"
+            find build -type f
             exit 1
           fi
 
           cp "$APK" Bubbles-Car-Wash.apk
-
-          echo "APK successfully prepared!"
           ls -lh Bubbles-Car-Wash.apk
 
-      - name: Upload APK artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Bubbles-Car-Wash-APK
