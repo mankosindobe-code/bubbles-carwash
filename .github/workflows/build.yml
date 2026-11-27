@@ -1,7 +1,56 @@
-Bubbles-Car-Wash/
-│
-├── main.py
-├── requirements.txt
-└── .github/
-    └── workflows/
-        └── build.yml
+
+name: Build Bubbles Car Wash APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Flet
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade flet
+
+      - name: Build Android APK
+        run: flet build apk --verbose
+
+      - name: Find and prepare APK
+        run: |
+          echo "Searching for APK..."
+
+          find build -type f -name "*.apk"
+
+          APK=$(find build -type f -name "*.apk" -print -quit)
+
+          if [ -z "$APK" ]; then
+            echo "ERROR: APK was not generated!"
+            echo "Build directory contents:"
+            ls -R build
+            exit 1
+          fi
+
+          cp "$APK" Bubbles-Car-Wash.apk
+
+          echo "APK successfully prepared!"
+          ls -lh Bubbles-Car-Wash.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Bubbles-Car-Wash-APK
+          path: Bubbles-Car-Wash.apk
+          if-no-files-found: error
